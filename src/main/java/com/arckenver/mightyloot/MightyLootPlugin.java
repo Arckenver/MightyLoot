@@ -64,20 +64,6 @@ public class MightyLootPlugin
 			newSpawnTask(lootConfig, lootConfig.getFrequency());
 		}
 		
-		CommandSpec spawnCmd = CommandSpec.builder()
-				.description(Text.of(""))
-				.permission("mightyloot.command.spawn")
-				.arguments(GenericArguments.optional(new WorldCommandElement(Text.of("world"))))
-				.executor(new SpawnExecutor())
-				.build();
-		
-		CommandSpec cancelCmd = CommandSpec.builder()
-				.description(Text.of(""))
-				.permission("mightyloot.command.cancel")
-				.arguments(GenericArguments.optional(new WorldCommandElement(Text.of("world"))))
-				.executor(new CancelExecutor())
-				.build();
-		
 		CommandSpec huntCmd = CommandSpec.builder()
 				.description(Text.of(""))
 				.permission("mightyloot.command.hunt")
@@ -92,14 +78,27 @@ public class MightyLootPlugin
 				.executor(new FindExecutor())
 				.build();
 		
+		CommandSpec spawnCmd = CommandSpec.builder()
+				.description(Text.of(""))
+				.permission("mightyloot.command.spawn")
+				.arguments(GenericArguments.optional(new WorldCommandElement(Text.of("world"))))
+				.executor(new SpawnExecutor())
+				.build();
+		
+		CommandSpec cancelCmd = CommandSpec.builder()
+				.description(Text.of(""))
+				.permission("mightyloot.command.cancel")
+				.arguments(GenericArguments.optional(new WorldCommandElement(Text.of("world"))))
+				.executor(new CancelExecutor())
+				.build();
+		
 		CommandSpec mightyLootCmd = CommandSpec.builder()
 				.description(Text.of(""))
 				.permission("mightyloot.command")
-				.arguments()
 				.executor(new MightyLootExecutor())
-				.child(spawnCmd, "spawn")
-				.child(huntCmd, "hunt", "h")
 				.child(findCmd, "find")
+				.child(huntCmd, "hunt", "h")
+				.child(spawnCmd, "spawn")
 				.child(cancelCmd, "cancel")
 				.build();
 		
