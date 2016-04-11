@@ -19,6 +19,10 @@ public class InteractListener
 	public void onInteract(InteractBlockEvent event, @First Player player)
 	{
 		World world = player.getWorld();
+		if (!event.getTargetBlock().getLocation().isPresent())
+		{
+			return;
+		}
 		Location<World> blockLoc = event.getTargetBlock().getLocation().get();
 		if (DataHandler.hasLoot(world.getName()))
 		{
