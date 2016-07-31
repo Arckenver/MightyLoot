@@ -38,10 +38,10 @@ public class SpawnLootRunnable implements Runnable
 		World world = Sponge.getServer().getWorld(lootConfig.getWorldName()).get();
 		if (DataHandler.hasLoot(world.getName()))
 		{
-			DataHandler.removeLoot(world.getName());
+			Loot loot = DataHandler.removeLoot(world.getName());
 			MessageChannel.TO_ALL.send(Text.builder()
 					.append(Text.of(TextColors.GOLD, "The last "))
-					.append(lootType.getDisplay())
+					.append(loot.getType().getDisplay())
 					.append(Text.of(TextColors.GOLD, " in "))
 					.append(Text.of(TextColors.YELLOW, world.getName()))
 					.append(Text.of(TextColors.GOLD, " has now vanished !"))
