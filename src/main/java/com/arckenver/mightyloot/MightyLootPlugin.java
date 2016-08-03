@@ -2,7 +2,6 @@ package com.arckenver.mightyloot;
 
 import java.io.File;
 import java.util.Hashtable;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -22,6 +21,7 @@ import com.arckenver.mightyloot.cmdexecutor.CancelExecutor;
 import com.arckenver.mightyloot.cmdexecutor.FindExecutor;
 import com.arckenver.mightyloot.cmdexecutor.HuntExecutor;
 import com.arckenver.mightyloot.cmdexecutor.MightyLootExecutor;
+import com.arckenver.mightyloot.cmdexecutor.ReloadExecutor;
 import com.arckenver.mightyloot.cmdexecutor.SpawnExecutor;
 import com.arckenver.mightyloot.listener.InteractListener;
 import com.arckenver.mightyloot.object.LootConfig;
@@ -92,6 +92,13 @@ public class MightyLootPlugin
 				.executor(new CancelExecutor())
 				.build();
 		
+		CommandSpec reloadCmd = CommandSpec.builder()
+				.description(Text.of(""))
+				.permission("mightyloot.command.reload")
+				.arguments()
+				.executor(new ReloadExecutor())
+				.build();
+		
 		CommandSpec mightyLootCmd = CommandSpec.builder()
 				.description(Text.of(""))
 				.permission("mightyloot.command")
@@ -100,6 +107,7 @@ public class MightyLootPlugin
 				.child(huntCmd, "hunt", "h")
 				.child(spawnCmd, "spawn")
 				.child(cancelCmd, "cancel")
+				.child(reloadCmd, "reload")
 				.build();
 		
 		Sponge.getCommandManager().register(this, mightyLootCmd, "mightyloot", "ml");
@@ -142,13 +150,7 @@ public class MightyLootPlugin
 	
 	public void cancelSpawnTask(LootConfig lootConfig)
 	{
-		for (Entry<LootConfig, Task> e : spawnTasks.entrySet())
-		{
-			if (e.getKey().equals(lootConfig))
-			{
-				e.getValue().cancel();
-			}
-		}
+		spawnTasks.remove(lootConfig).cancel();
 	}
 	
 	public static MightyLootPlugin getInstance()

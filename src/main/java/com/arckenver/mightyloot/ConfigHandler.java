@@ -29,7 +29,10 @@ public class ConfigHandler
 	{
 		configFile = new File(rootDir, "config.conf");
 		configManager = HoconConfigurationLoader.builder().setPath(configFile.toPath()).build();
-		
+	}
+	
+	public static void load()
+	{
 		try
 		{
 			if (!configFile.exists())
@@ -49,10 +52,7 @@ public class ConfigHandler
 		{
 			MightyLootPlugin.getLogger().error("Could not write in the config file !");
 		}
-	}
-	
-	public static void load()
-	{
+		
 		lootConfigs = new ArrayList<LootConfig>();
 		if (!config.getNode("lootTypes").hasMapChildren())
 		{
