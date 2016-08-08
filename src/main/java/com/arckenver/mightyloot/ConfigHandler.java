@@ -100,7 +100,8 @@ public class ConfigHandler
 			{
 				CommentedConfigurationNode worldNode = config.getNode("worlds").getNode(worldName);
 				Area area = null;
-				if (worldNode.getNode("area", "type").getString().equals("rect"))
+				String type = worldNode.getNode("area", "type").getString("no value");
+				if (type.equals("rect"))
 				{
 					area = new RectArea(
 							worldNode.getNode("area", "minX").getInt(),
@@ -111,7 +112,7 @@ public class ConfigHandler
 							worldNode.getNode("area", "maxZ").getInt()
 					);
 				}
-				else if (worldNode.getNode("area", "type").getString().equals("cyl"))
+				else if (type.equals("cyl"))
 				{
 					area = new CylArea(
 							worldNode.getNode("area", "centerX").getInt(),
@@ -123,7 +124,7 @@ public class ConfigHandler
 				}
 				else
 				{
-					MightyLootPlugin.getLogger().error("Error while loading config file: " + worldNode.getNode("areaType").getString() + " is not a valid area type.");
+					MightyLootPlugin.getLogger().error("Error while loading config file: " + type + " is not a valid area type.");
 					continue;
 				}
 				LootConfig lootConfig = new LootConfig(
@@ -239,6 +240,7 @@ public class ConfigHandler
 		node.getNode("items", "minecraft:cake").setValue("0-8");
 		
 		conf.getNode("worlds", "world", "frequency").setValue(3600);
+		conf.getNode("worlds", "world", "area").setComment("represents the area where the loot can spawn\nfor 'type', accepted values are 'rect' and 'cyl'\nif using 'rect', specify 'minX', 'maxX', 'minY', 'maxY', 'minZ', 'maxZ'\nif using 'cyl', specify 'minY', 'maxY', 'centerX', 'centerZ', 'radius'");
 		conf.getNode("worlds", "world", "area", "type").setValue("rect");
 		conf.getNode("worlds", "world", "area", "minX").setValue(-5000);
 		conf.getNode("worlds", "world", "area", "minY").setValue(10);
