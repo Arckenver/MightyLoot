@@ -53,12 +53,12 @@ public class SpawnLootRunnable implements Runnable
 		while (loc == null && attempt < MAX_ATTEMPTS)
 		{
 			attempt++;
-			Location<World> randomLoc = lootConfig.getRandomLoc(world);
+			Location<World> randomLoc = lootConfig.getArea().getRandomLoc(world);
 			BlockType lastLastBlockType = randomLoc.getBlockType();
 			randomLoc.add(0, 1, 0);
 			BlockType lastBlockType = randomLoc.getBlockType();
 			BlockType blockType;
-			while (randomLoc.getBlockY() < lootConfig.getMaxY())
+			while (randomLoc.getBlockY() < lootConfig.getArea().getMaxY())
 			{
 				randomLoc = randomLoc.add(0, 1, 0);
 				blockType = randomLoc.getBlockType();
