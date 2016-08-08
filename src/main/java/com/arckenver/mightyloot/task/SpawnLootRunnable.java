@@ -85,11 +85,11 @@ public class SpawnLootRunnable implements Runnable
 		loc = loc.add(0, 1, 0);
 		
 		// TODO below we use setblock command, it shall be replaced by code using inventory api
-		/* 
-		 * loc.setBlockType(BlockTypes.CHEST);
-		 * Chest chest = (Chest) loc.getTileEntity().get();
-		 *lootType.fillChest(chest.getInventory().parent());
-		 */
+		/*
+		loc.setBlockType(BlockTypes.CHEST);
+		Chest chest = (Chest) loc.getTileEntity().get();
+		lootType.fillChest(chest.getInventory().parent());
+		*/
 		String setblockCmd = "setblock " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ() + " chest 0 replace {Items:[";
 		int slot = 0;
 		for (Entry<ItemType, Interval> e : lootType.getItems().entrySet())
