@@ -1,5 +1,7 @@
 package com.arckenver.mightyloot.area;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.apache.commons.lang3.RandomUtils;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -27,8 +29,8 @@ public class CylArea implements Area
 		int z;
 		do
 		{
-			x = RandomUtils.nextInt(centerX - radius, centerX + radius);
-			z = RandomUtils.nextInt(centerZ - radius, centerZ + radius);
+			x = ThreadLocalRandom.current().nextInt(centerX - radius, centerX + radius + 1);
+			z = ThreadLocalRandom.current().nextInt(centerZ - radius, centerZ + radius + 1);
 		}
 		while(Math.pow(x - centerX, 2) + Math.pow(z - centerZ, 2) > Math.pow(radius, 2));
 		

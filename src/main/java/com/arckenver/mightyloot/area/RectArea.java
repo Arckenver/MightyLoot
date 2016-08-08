@@ -1,6 +1,7 @@
 package com.arckenver.mightyloot.area;
 
-import org.apache.commons.lang3.RandomUtils;
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -25,9 +26,9 @@ public class RectArea implements Area
 	
 	public Location<World> getRandomLoc(World world)
 	{
-		int x = RandomUtils.nextInt(minX, maxX + 1);
-		int y = RandomUtils.nextInt(minY, maxY + 1);
-		int z = RandomUtils.nextInt(minZ, maxZ + 1);
+		int x = ThreadLocalRandom.current().nextInt(minX, maxX + 1);
+		int y = ThreadLocalRandom.current().nextInt(minY, maxY + 1);
+		int z = ThreadLocalRandom.current().nextInt(minZ, maxZ + 1);
 		return world.getLocation(x, y, z);
 	}
 	
