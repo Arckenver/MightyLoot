@@ -31,11 +31,15 @@ public class DataHandler
 			return null;
 		}
 		// TODO issue here : chest explodes and content stays
-		//loot.getLoc().setBlockType(BlockTypes.AIR);
+		/*
+		((Chest) loot.getLoc().getTileEntity().get()).getInventory().clear();
+		*/
+		
 		Sponge.getCommandManager().process(Sponge.getServer().getConsole(), "setblock " + 
 				loot.getLoc().getBlockX() + " " +
 				loot.getLoc().getBlockY() + " " +
-				loot.getLoc().getBlockZ() + " air");
+				loot.getLoc().getBlockZ() + " minecraft:chest 0 replace {Items:[]}");
+		loot.getLoc().setBlockType(BlockTypes.AIR);
 		loot.getLoc().add(0, -1, 0).setBlockType(BlockTypes.AIR);
 		return loot;
 	}
