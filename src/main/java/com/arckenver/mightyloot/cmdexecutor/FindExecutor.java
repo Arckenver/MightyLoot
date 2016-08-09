@@ -15,6 +15,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.arckenver.mightyloot.DataHandler;
+import com.arckenver.mightyloot.LanguageHandler;
 
 public class FindExecutor implements CommandExecutor
 {
@@ -36,28 +37,31 @@ public class FindExecutor implements CommandExecutor
 			}
 			else
 			{
-				src.sendMessage(Text.of(TextColors.RED, "You must precise a world name to force the spawn of a loot"));
+				src.sendMessage(Text.of(TextColors.RED, LanguageHandler.get("AA")));
 				return CommandResult.success();
 			}
 		}
 		
-		if (DataHandler.hasLoot(world.getName()))
+		if (!DataHandler.hasLoot(world.getName()))
 		{
-			Location<World> loc = DataHandler.getLoot(world.getName()).getLoc();
-			src.sendMessage(
-				Text.builder()
-					.append(Text.of(TextColors.GOLD, "Loot is at position "))
-					.append(Text
-							.builder(loc.getBlockX() + ";" + loc.getBlockY() + ";" + loc.getBlockZ())
-							.color(TextColors.YELLOW)
-							.onClick(TextActions.runCommand("/tp " + ((player != null) ? player.getName() : "") + " " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ()))
-							.build())
-					.append(Text.of(TextColors.DARK_GRAY, " <- click"))
-					.build()
-			);
+			src.sendMessage(Text.of(TextColors.RED, LanguageHandler.get("AC")));
 			return CommandResult.success();
 		}
-		src.sendMessage(Text.of(TextColors.RED, "Could not find any loot in this world"));
+		
+		String[] s = LanguageHandler.get("AB").split("\\{POS\\}");
+		Location<World> loc = DataHandler.getLoot(world.getName()).getLoc();
+		src.sendMessage(
+			Text.builder()
+				.append(Text.of(TextColors.GOLD, (s.length > 0) ? s[0] : ""))
+				.append(Text
+						.builder(loc.getBlockX() + ";" + loc.getBlockY() + ";" + loc.getBlockZ())
+						.color(TextColors.YELLOW)
+						.onClick(TextActions.runCommand("/tp " + ((player != null) ? player.getName() : "") + " " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ()))
+						.build())
+				.append(Text.of(TextColors.GOLD, (s.length > 1) ? s[1] : ""))
+				.append(Text.of(TextColors.DARK_GRAY, " <- " + LanguageHandler.get("DD")))
+				.build()
+		);
 		return CommandResult.success();
 	}
 }

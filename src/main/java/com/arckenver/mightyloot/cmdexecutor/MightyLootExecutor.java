@@ -8,6 +8,8 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import com.arckenver.mightyloot.LanguageHandler;
+
 public class MightyLootExecutor implements CommandExecutor
 {
 	public CommandResult execute(CommandSource src, CommandContext ctx) throws CommandException
@@ -17,23 +19,23 @@ public class MightyLootExecutor implements CommandExecutor
 		
 		if (src.hasPermission("mightyloot.command.hunt"))
 		{
-			builder.append(Text.of(TextColors.GOLD, "\n/ml hunt", TextColors.GRAY, " - ", TextColors.YELLOW, "gives you your distance to the loot in this world"));
+			builder.append(Text.of(TextColors.GOLD, "\n/ml hunt", TextColors.GRAY, " - ", TextColors.YELLOW, LanguageHandler.get("CA")));
 		}
 		if (src.hasPermission("mightyloot.command.find"))
 		{
-			builder.append(Text.of(TextColors.GOLD, "\n/ml find", TextColors.GRAY, " - ", TextColors.YELLOW, "gives chest location"));
+			builder.append(Text.of(TextColors.GOLD, "\n/ml find", TextColors.GRAY, " - ", TextColors.YELLOW, LanguageHandler.get("CB")));
 		}
 		if (src.hasPermission("mightyloot.command.spawn"))
 		{
-			builder.append(Text.of(TextColors.GOLD, "\n/ml spawn [world]", TextColors.GRAY, " - ", TextColors.YELLOW, "forces the spawn of a new loot"));
+			builder.append(Text.of(TextColors.GOLD, "\n/ml spawn [world]", TextColors.GRAY, " - ", TextColors.YELLOW, LanguageHandler.get("CC")));
 		}
 		if (src.hasPermission("mightyloot.command.cancel"))
 		{
-			builder.append(Text.of(TextColors.GOLD, "\n/ml cancel [world]", TextColors.GRAY, " - ", TextColors.YELLOW, "removes the loot from a world"));
+			builder.append(Text.of(TextColors.GOLD, "\n/ml cancel [world]", TextColors.GRAY, " - ", TextColors.YELLOW, LanguageHandler.get("CD")));
 		}
 		if (src.hasPermission("mightyloot.command.reload"))
 		{
-			builder.append(Text.of(TextColors.GOLD, "\n/ml reload", TextColors.GRAY, " - ", TextColors.YELLOW, "reloads the config file"));
+			builder.append(Text.of(TextColors.GOLD, "\n/ml reload", TextColors.GRAY, " - ", TextColors.YELLOW, LanguageHandler.get("CE")));
 		}
 		
 		src.sendMessage(builder.build());

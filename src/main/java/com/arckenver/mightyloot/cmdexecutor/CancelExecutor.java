@@ -14,6 +14,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import com.arckenver.mightyloot.DataHandler;
+import com.arckenver.mightyloot.LanguageHandler;
 import com.arckenver.mightyloot.MightyLootPlugin;
 import com.arckenver.mightyloot.object.Loot;
 import com.arckenver.mightyloot.object.LootConfig;
@@ -37,14 +38,14 @@ public class CancelExecutor implements CommandExecutor
 			}
 			else
 			{
-				src.sendMessage(Text.of(TextColors.RED, "You must precise a world name"));
+				src.sendMessage(Text.of(TextColors.RED, LanguageHandler.get("AA")));
 				return CommandResult.success();
 			}
 		}
 		Loot loot = DataHandler.removeLoot(world.getName());
 		if (loot == null)
 		{
-			src.sendMessage(Text.of(TextColors.RED, "There already is no loot in this world"));
+			src.sendMessage(Text.of(TextColors.RED, LanguageHandler.get("AC")));
 			return CommandResult.success();
 		}
 		for (LootConfig lootConfig : MightyLootPlugin.getInstance().getSpawnTasks().keySet())
@@ -54,12 +55,19 @@ public class CancelExecutor implements CommandExecutor
 				MightyLootPlugin.getInstance().cancelSpawnTask(lootConfig);
 			}
 		}
+		
+		String[] s1 = LanguageHandler.get("BB").split("\\{LOOT\\}");
+		String[] s2 = s1[0].split("\\{WORLD\\}");
+		String[] s3 = s1[1].split("\\{WORLD\\}");
+		
 		MessageChannel.TO_ALL.send(Text.builder()
-				.append(Text.of(TextColors.GOLD, "The last "))
-				.append(loot.getType().getDisplay())
-				.append(Text.of(TextColors.GOLD, " in "))
+				.append(Text.of(TextColors.GOLD, (s2.length > 0) ? s2[0] : ""))
 				.append(Text.of(TextColors.YELLOW, world.getName()))
-				.append(Text.of(TextColors.GOLD, " has now vanished !"))
+				.append(Text.of(TextColors.GOLD, (s2.length > 1) ? s2[1] : ""))
+				.append(loot.getType().getDisplay())
+				.append(Text.of(TextColors.GOLD, (s3.length > 0) ? s3[0] : ""))
+				.append(Text.of(TextColors.YELLOW, world.getName()))
+				.append(Text.of(TextColors.GOLD, (s3.length > 1) ? s3[1] : ""))
 				.build());
 		return CommandResult.success();
 	}

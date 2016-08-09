@@ -11,6 +11,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import com.arckenver.mightyloot.DataHandler;
+import com.arckenver.mightyloot.LanguageHandler;
 import com.arckenver.mightyloot.object.Loot;
 import com.flowpowered.math.vector.Vector3d;
 
@@ -24,7 +25,7 @@ public class HuntExecutor implements CommandExecutor
 			World world = player.getWorld();
 			if (!DataHandler.hasLoot(world.getName()))
 			{
-				src.sendMessage(Text.of(TextColors.RED, "There is currently no loot in this world"));
+				src.sendMessage(Text.of(TextColors.RED, LanguageHandler.get("AC")));
 				return CommandResult.success();
 			}
 			Loot loot = DataHandler.getLoot(world.getName());
@@ -39,11 +40,16 @@ public class HuntExecutor implements CommandExecutor
 			}
 			alpha = (double) Math.round(alpha * 100) / 100;
 			
-			src.sendMessage(Text.of(TextColors.LIGHT_PURPLE, "You must turn " + ((alpha < 0) ? -alpha + "° to the left" : alpha + "° to the right") + " and the chest will be at a distance of " + distance + " blocks"));
+			String direction = (alpha < 0) ? LanguageHandler.get("DC") : LanguageHandler.get("DB");
+			
+			src.sendMessage(Text.of(TextColors.LIGHT_PURPLE, LanguageHandler.get("DA")
+					.replaceAll("\\{DEGREES\\}", String.valueOf(Math.abs(alpha)))
+					.replaceAll("\\{DIRECTION\\}", direction)
+					.replaceAll("\\{DISTANCE\\}", String.valueOf(distance))));
 		}
 		else
 		{
-			src.sendMessage(Text.of(TextColors.RED, "You must be an in game player to perform that command"));
+			src.sendMessage(Text.of(TextColors.RED, LanguageHandler.get("AD")));
 		}
 		return CommandResult.success();
 	}

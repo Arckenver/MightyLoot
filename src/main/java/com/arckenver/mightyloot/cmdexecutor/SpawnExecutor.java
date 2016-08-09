@@ -12,6 +12,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
+import com.arckenver.mightyloot.LanguageHandler;
 import com.arckenver.mightyloot.MightyLootPlugin;
 import com.arckenver.mightyloot.object.LootConfig;
 
@@ -34,7 +35,7 @@ public class SpawnExecutor implements CommandExecutor
 			}
 			else
 			{
-				src.sendMessage(Text.of(TextColors.RED, "You must precise a world name"));
+				src.sendMessage(Text.of(TextColors.RED, LanguageHandler.get("AA")));
 				return CommandResult.success();
 			}
 		}
@@ -47,7 +48,7 @@ public class SpawnExecutor implements CommandExecutor
 				return CommandResult.success();
 			}
 		}
-		src.sendMessage(Text.of(TextColors.RED, "Could not find loot config for this world"));
+		src.sendMessage(Text.of(TextColors.RED, LanguageHandler.get("AF")));
 		return CommandResult.success();
 	}
 }

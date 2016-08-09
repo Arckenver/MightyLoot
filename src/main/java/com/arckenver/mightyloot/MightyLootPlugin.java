@@ -53,7 +53,9 @@ public class MightyLootPlugin
 		spawnTasks = new Hashtable<LootConfig, Task>();
 		
 		rootDir = new File(defaultConfFile.getParentFile(), "mightyloot");
-		
+
+		LanguageHandler.init(rootDir);
+		LanguageHandler.load();
 		ConfigHandler.init(rootDir);
 		ConfigHandler.load();
 		
