@@ -56,6 +56,9 @@ public class ConfigHandler
 			MightyLootPlugin.getLogger().error("Could not write in the config file !");
 		}
 		
+		ensureBoolean(config.getNode("options", "placeGlowstoneBelowLoot"), true);
+		ensureBoolean(config.getNode("options", "placeAlwaysOnGround"), true);
+		
 		lootConfigs = new ArrayList<LootConfig>();
 		if (!config.getNode("lootTypes").hasMapChildren())
 		{
@@ -162,6 +165,7 @@ public class ConfigHandler
 				MightyLootPlugin.getLogger().warn(worldName + " is not a valid world name !");
 			}
 		}
+		saveConfig();
 	}
 	
 	public static void saveConfig()
@@ -255,11 +259,40 @@ public class ConfigHandler
 		conf.getNode("worlds", "world", "lootTypes", "goldish").setValue(25);
 		conf.getNode("worlds", "world", "lootTypes", "food").setValue(15);
 	}
-	
-	// LOOTCONFIG
 
 	public static ArrayList<LootConfig> getLootConfigs()
 	{
 		return lootConfigs;
+	}
+
+	public static CommentedConfigurationNode getOptions()
+	{
+		return config.getNode("options");
+	}
+	
+	/*
+	private static void ensureString(CommentedConfigurationNode node, String def)
+	{
+		if (node.getString() == null)
+		{
+			node.setValue(def);
+		}
+	}
+
+	private static void ensurePositiveNumber(CommentedConfigurationNode node, Number def)
+	{
+		if (!(node.getValue() instanceof Number) || node.getDouble(-1) < 0)
+		{
+			node.setValue(def);
+		}
+	}
+	*/
+	
+	private static void ensureBoolean(CommentedConfigurationNode node, boolean def)
+	{
+		if (!(node.getValue() instanceof Boolean))
+		{
+			node.setValue(def);
+		}
 	}
 }

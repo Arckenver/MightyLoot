@@ -32,8 +32,8 @@ public class RectArea implements Area
 		return world.getLocation(x, y, z);
 	}
 	
-	public int getMaxY()
+	public int getMinY()
 	{
-		return maxY;
+		return minY;
 	}
 }

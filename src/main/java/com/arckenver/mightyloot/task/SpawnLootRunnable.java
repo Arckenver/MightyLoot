@@ -3,7 +3,6 @@ package com.arckenver.mightyloot.task;
 import java.util.Map.Entry;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.Text;
@@ -13,6 +12,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import com.arckenver.mightyloot.ConfigHandler;
 import com.arckenver.mightyloot.DataHandler;
 import com.arckenver.mightyloot.LanguageHandler;
 import com.arckenver.mightyloot.MightyLootPlugin;
@@ -23,7 +23,7 @@ import com.arckenver.mightyloot.object.LootType;
 
 public class SpawnLootRunnable implements Runnable
 {
-	public static final int MAX_ATTEMPTS = 200;
+	public static final int MAX_ATTEMPTS = 1000;
 	
 	private LootConfig lootConfig;
 	
@@ -47,11 +47,11 @@ public class SpawnLootRunnable implements Runnable
 			
 			MessageChannel.TO_ALL.send(Text.builder()
 					.append(Text.of(TextColors.GOLD, (s2.length > 0) ? s2[0] : ""))
-					.append(Text.of(TextColors.YELLOW, world.getName()))
+					.append(Text.of(TextColors.YELLOW, (s2.length > 1) ? world.getName() : ""))
 					.append(Text.of(TextColors.GOLD, (s2.length > 1) ? s2[1] : ""))
 					.append(loot.getType().getDisplay())
 					.append(Text.of(TextColors.GOLD, (s3.length > 0) ? s3[0] : ""))
-					.append(Text.of(TextColors.YELLOW, world.getName()))
+					.append(Text.of(TextColors.YELLOW, (s3.length > 1) ? world.getName() : ""))
 					.append(Text.of(TextColors.GOLD, (s3.length > 1) ? s3[1] : ""))
 					.build());
 		}
@@ -62,25 +62,34 @@ public class SpawnLootRunnable implements Runnable
 		{
 			attempt++;
 			Location<World> randomLoc = lootConfig.getArea().getRandomLoc(world);
-			BlockType lastLastBlockType = randomLoc.getBlockType();
-			randomLoc.add(0, 1, 0);
-			BlockType lastBlockType = randomLoc.getBlockType();
-			BlockType blockType;
-			while (randomLoc.getBlockY() < lootConfig.getArea().getMaxY())
+			if (!randomLoc.getBlockType().equals(BlockTypes.AIR) || 
+					!randomLoc.add(0, 1, 0).getBlockType().equals(BlockTypes.AIR))
 			{
-				randomLoc = randomLoc.add(0, 1, 0);
-				blockType = randomLoc.getBlockType();
-				if (lastLastBlockType.equals(BlockTypes.AIR) && lastBlockType.equals(BlockTypes.AIR) && blockType.equals(BlockTypes.AIR))
+				MightyLootPlugin.getLogger().warn("1");
+				continue;
+			}
+			if (ConfigHandler.getOptions().getNode("placeGlowstoneBelowLoot").getBoolean())
+			{
+				randomLoc = randomLoc.add(0, -1, 0);
+				if (!randomLoc.getBlockType().equals(BlockTypes.AIR))
 				{
-					loc = randomLoc.add(0, -2, 0);
-					break;
-				}
-				else
-				{
-					lastLastBlockType = lastBlockType;
-					lastBlockType = blockType;
+					MightyLootPlugin.getLogger().warn("2");
+					continue;
 				}
 			}
+			if (ConfigHandler.getOptions().getNode("placeAlwaysOnGround").getBoolean())
+			{
+				while (randomLoc.add(0, -1, 0).getBlockType().equals(BlockTypes.AIR) && randomLoc.getBlockY() >= lootConfig.getArea().getMinY())
+				{
+					randomLoc = randomLoc.add(0, -1, 0);
+				}
+				if (randomLoc.add(0, -1, 0).getBlockType().equals(BlockTypes.AIR))
+				{
+					MightyLootPlugin.getLogger().warn("3");
+					continue;
+				}
+			}
+			loc = randomLoc;
 		}
 		if (loc == null)
 		{
@@ -88,16 +97,18 @@ public class SpawnLootRunnable implements Runnable
 			return;
 		}
 		
-		loc.setBlockType(BlockTypes.GLOWSTONE);
+		if (ConfigHandler.getOptions().getNode("placeGlowstoneBelowLoot").getBoolean())
+		{
+			loc.setBlockType(BlockTypes.GLOWSTONE);
+			loc = loc.add(0, 1, 0);
+		}
 		
-		loc = loc.add(0, 1, 0);
-		
-		// TODO below we use setblock command, it shall be replaced by code using inventory api
 		/*
 		loc.setBlockType(BlockTypes.CHEST);
 		Chest chest = (Chest) loc.getTileEntity().get();
 		lootType.fillChest(chest.getInventory().parent());
 		*/
+		// TODO below we use setblock command, it shall be replaced by code using inventory api
 		String setblockCmd = "setblock " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ() + " chest 0 replace {Items:[";
 		int slot = 0;
 		for (Entry<ItemType, Interval> e : lootType.getItems().entrySet())
@@ -126,12 +137,13 @@ public class SpawnLootRunnable implements Runnable
 		
 		MessageChannel.TO_ALL.send(Text.builder()
 				.append(Text.of(TextColors.GOLD, (s2.length > 0) ? s2[0] : ""))
-				.append(Text.of(TextColors.YELLOW, world.getName()))
+				.append(Text.of(TextColors.YELLOW, (s2.length > 1) ? world.getName() : ""))
 				.append(Text.of(TextColors.GOLD, (s2.length > 1) ? s2[1] : ""))
 				.append(lootType.getDisplay())
 				.append(Text.of(TextColors.GOLD, (s3.length > 0) ? s3[0] : ""))
-				.append(Text.of(TextColors.YELLOW, world.getName()))
+				.append(Text.of(TextColors.YELLOW, (s3.length > 1) ? world.getName() : ""))
 				.append(Text.of(TextColors.GOLD, (s3.length > 1) ? s3[1] : ""))
+				.append(Text.of(" "))
 				
 				.append(Text.of(TextColors.GOLD, (s.length > 0) ? s[0] : ""))
 				.append(Text.builder("/ml hunt").color(TextColors.YELLOW).onClick(TextActions.runCommand("/mightyloot hunt")).build())

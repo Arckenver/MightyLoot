@@ -32,11 +32,11 @@ public class ReloadExecutor implements CommandExecutor
 				
 				MessageChannel.TO_ALL.send(Text.builder()
 						.append(Text.of(TextColors.GOLD, (s2.length > 0) ? s2[0] : ""))
-						.append(Text.of(TextColors.YELLOW, lootConfig.getWorldName()))
+						.append(Text.of(TextColors.YELLOW, (s2.length > 1) ? lootConfig.getWorldName() : ""))
 						.append(Text.of(TextColors.GOLD, (s2.length > 1) ? s2[1] : ""))
 						.append(loot.getType().getDisplay())
 						.append(Text.of(TextColors.GOLD, (s3.length > 0) ? s3[0] : ""))
-						.append(Text.of(TextColors.YELLOW, lootConfig.getWorldName()))
+						.append(Text.of(TextColors.YELLOW, (s3.length > 1) ? lootConfig.getWorldName() : ""))
 						.append(Text.of(TextColors.GOLD, (s3.length > 1) ? s3[1] : ""))
 						.build());
 			}

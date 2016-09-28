@@ -6,5 +6,5 @@ import org.spongepowered.api.world.World;
 public interface Area
 {
 	public Location<World> getRandomLoc(World world);
-	public int getMaxY();
+	public int getMinY();
 }

@@ -38,8 +38,8 @@ public class CylArea implements Area
 		return world.getLocation(x, y, z);
 	}
 	
-	public int getMaxY()
+	public int getMinY()
 	{
-		return maxY;
+		return minY;
 	}
 }
