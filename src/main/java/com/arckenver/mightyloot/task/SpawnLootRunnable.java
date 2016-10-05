@@ -1,9 +1,15 @@
 package com.arckenver.mightyloot.task;
 
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -11,6 +17,7 @@ import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.extent.Extent;
 
 import com.arckenver.mightyloot.ConfigHandler;
 import com.arckenver.mightyloot.DataHandler;
@@ -65,7 +72,6 @@ public class SpawnLootRunnable implements Runnable
 			if (!randomLoc.getBlockType().equals(BlockTypes.AIR) || 
 					!randomLoc.add(0, 1, 0).getBlockType().equals(BlockTypes.AIR))
 			{
-				MightyLootPlugin.getLogger().warn("1");
 				continue;
 			}
 			if (ConfigHandler.getOptions().getNode("placeGlowstoneBelowLoot").getBoolean())
@@ -73,7 +79,6 @@ public class SpawnLootRunnable implements Runnable
 				randomLoc = randomLoc.add(0, -1, 0);
 				if (!randomLoc.getBlockType().equals(BlockTypes.AIR))
 				{
-					MightyLootPlugin.getLogger().warn("2");
 					continue;
 				}
 			}
@@ -85,7 +90,6 @@ public class SpawnLootRunnable implements Runnable
 				}
 				if (randomLoc.add(0, -1, 0).getBlockType().equals(BlockTypes.AIR))
 				{
-					MightyLootPlugin.getLogger().warn("3");
 					continue;
 				}
 			}
@@ -126,6 +130,23 @@ public class SpawnLootRunnable implements Runnable
 		}
 		setblockCmd = setblockCmd.substring(0, setblockCmd.length() - 1) + "]}";
 		Sponge.getCommandManager().process(Sponge.getServer().getConsole(), setblockCmd);
+		
+		loc = loc.add(0, 1, 0);
+		Extent extent = loc.getExtent();
+		for (Entry<EntityType, Integer> e : ConfigHandler.getLootGuardians().entrySet())
+		{
+			for (int i = 0; i < e.getValue(); i++)
+			{
+				Optional<Entity> optEntity = extent.createEntity(e.getKey(), loc.getPosition());
+				if (optEntity.isPresent())
+				{
+					extent.spawnEntity(optEntity.get(),
+							Cause.source(
+									EntitySpawnCause.builder().entity(optEntity.get()).type(SpawnTypes.PLUGIN).build()
+							).build());
+				}
+			}
+		}
 		
 		DataHandler.setLoot(world.getName(), new Loot(world, loc, lootType));
 		

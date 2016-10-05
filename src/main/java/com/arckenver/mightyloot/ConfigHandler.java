@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.item.ItemType;
 
 import com.arckenver.mightyloot.area.Area;
@@ -27,6 +29,7 @@ public class ConfigHandler
 	private static CommentedConfigurationNode config;
 	
 	private static ArrayList<LootConfig> lootConfigs;
+	private static Hashtable<EntityType, Integer> lootGuardians;
 	
 	public static void init(File rootDir)
 	{
@@ -165,6 +168,19 @@ public class ConfigHandler
 				MightyLootPlugin.getLogger().warn(worldName + " is not a valid world name !");
 			}
 		}
+		lootGuardians = new Hashtable<EntityType, Integer>();
+		for (Entry<Object, ? extends CommentedConfigurationNode> entry : config.getNode("options", "lootGuardians").getChildrenMap().entrySet())
+		{
+			Optional<EntityType> optEntityType = Sponge.getRegistry().getType(EntityType.class, entry.getKey().toString());
+			if (optEntityType.isPresent())
+			{
+				lootGuardians.put(optEntityType.get(), entry.getValue().getInt());
+			}
+			else
+			{
+				MightyLootPlugin.getLogger().error("Error while reading loot guardians in config: " + entry.getKey().toString() + " is not an entity type");
+			}
+		}
 		saveConfig();
 	}
 	
@@ -258,6 +274,8 @@ public class ConfigHandler
 		conf.getNode("worlds", "world", "lootTypes", "mobs").setValue(15);
 		conf.getNode("worlds", "world", "lootTypes", "goldish").setValue(25);
 		conf.getNode("worlds", "world", "lootTypes", "food").setValue(15);
+		
+		conf.getNode("options", "lootGuardians", "Zombie").setValue(0).setComment("the plugin will make those mobs spawn with the loot\nspecify mob name using EntityType (Zombie, Skeleton, Spider etc) and number of entity to make spawn");
 	}
 
 	public static ArrayList<LootConfig> getLootConfigs()
@@ -265,6 +283,11 @@ public class ConfigHandler
 		return lootConfigs;
 	}
 
+	public static Hashtable<EntityType, Integer> getLootGuardians()
+	{
+		return lootGuardians;
+	}
+	
 	public static CommentedConfigurationNode getOptions()
 	{
 		return config.getNode("options");
