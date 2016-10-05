@@ -28,7 +28,7 @@ import com.arckenver.mightyloot.object.LootConfig;
 import com.arckenver.mightyloot.task.SpawnLootRunnable;
 import com.google.inject.Inject;
 
-@Plugin(id="com.arckenver.mightyloot", name="MightyLoot", version="1.3", description="A treasurehunt-like sponge plugin.")
+@Plugin(id="com.arckenver.mightyloot", name="MightyLoot", version="1.4", description="A treasurehunt-like sponge plugin.")
 public class MightyLootPlugin
 {
 	private File rootDir;
