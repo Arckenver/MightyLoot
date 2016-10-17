@@ -103,7 +103,7 @@ public class SpawnLootRunnable implements Runnable
 		
 		if (ConfigHandler.getOptions().getNode("placeGlowstoneBelowLoot").getBoolean())
 		{
-			loc.setBlockType(BlockTypes.GLOWSTONE);
+			loc.setBlockType(BlockTypes.GLOWSTONE, MightyLootPlugin.getCause());
 			loc = loc.add(0, 1, 0);
 		}
 		
@@ -137,14 +137,11 @@ public class SpawnLootRunnable implements Runnable
 		{
 			for (int i = 0; i < e.getValue(); i++)
 			{
-				Optional<Entity> optEntity = extent.createEntity(e.getKey(), loc.getPosition());
-				if (optEntity.isPresent())
-				{
-					extent.spawnEntity(optEntity.get(),
-							Cause.source(
-									EntitySpawnCause.builder().entity(optEntity.get()).type(SpawnTypes.PLUGIN).build()
-							).build());
-				}
+				Entity entity = extent.createEntity(e.getKey(), loc.getPosition());
+				extent.spawnEntity(entity,
+					Cause.source(
+						EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build()
+					).build());
 			}
 		}
 		

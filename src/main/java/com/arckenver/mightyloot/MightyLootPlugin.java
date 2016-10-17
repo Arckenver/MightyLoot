@@ -27,8 +27,10 @@ import com.arckenver.mightyloot.listener.InteractListener;
 import com.arckenver.mightyloot.object.LootConfig;
 import com.arckenver.mightyloot.task.SpawnLootRunnable;
 import com.google.inject.Inject;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 
-@Plugin(id="com.arckenver.mightyloot", name="MightyLoot", version="2.0", description="A treasurehunt-like sponge plugin.")
+@Plugin(id="mightyloot", name="MightyLoot", version="2.0", authors={"Arckenver"}, description="A treasurehunt-like sponge plugin.", url="https://github.com/Arckenver/MightyLoot")
 public class MightyLootPlugin
 {
 	private File rootDir;
@@ -43,6 +45,7 @@ public class MightyLootPlugin
     private File defaultConfFile;
 	
 	private Hashtable<LootConfig, Task> spawnTasks;
+	private Cause cause;
 	
 	@Listener
 	public void onStart(GameStartingServerEvent event)
@@ -65,6 +68,8 @@ public class MightyLootPlugin
 		{
 			newSpawnTask(lootConfig, lootConfig.getFrequency());
 		}
+		
+		cause = Cause.of(NamedCause.of(NamedCause.SOURCE, getInstance()));
 		
 		CommandSpec huntCmd = CommandSpec.builder()
 				.description(Text.of(""))
@@ -163,5 +168,10 @@ public class MightyLootPlugin
 	public static Logger getLogger()
 	{
 		return getInstance().logger;
+	}
+	
+	public static Cause getCause()
+	{
+		return getInstance().cause;
 	}
 }
