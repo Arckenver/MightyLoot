@@ -1,7 +1,6 @@
 package com.arckenver.mightyloot.task;
 
 import java.util.Map.Entry;
-import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
