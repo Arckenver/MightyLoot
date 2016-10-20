@@ -168,6 +168,6 @@ public class MightyLootPlugin
 	
 	public static Cause getCause()
 	{
-		return Cause.source(Sponge.getPluginManager().getPlugin("nations").get()).build();
+		return Cause.source(Sponge.getPluginManager().getPlugin("mightyloot").get()).build();
 	}
 }
