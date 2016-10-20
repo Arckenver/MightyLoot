@@ -29,7 +29,7 @@ import com.arckenver.mightyloot.task.SpawnLootRunnable;
 import com.google.inject.Inject;
 import org.spongepowered.api.event.cause.Cause;
 
-@Plugin(id="mightyloot", name="MightyLoot", version="2.0", authors={"Arckenver"}, description="A treasurehunt-like sponge plugin.", url="https://github.com/Arckenver/MightyLoot")
+@Plugin(id="mightyloot", name="MightyLoot", version="2.1", authors={"Arckenver"}, description="A treasurehunt-like sponge plugin.", url="https://github.com/Arckenver/MightyLoot")
 public class MightyLootPlugin
 {
 	private File rootDir;
