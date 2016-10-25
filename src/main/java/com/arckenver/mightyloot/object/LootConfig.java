@@ -11,13 +11,15 @@ public class LootConfig
 {
 	private String worldName;
 	private int frequency;
+	private int duration;
 	private Area area;
 	private Hashtable<LootType, Integer> lootTypes;
 	
-	public LootConfig(String worldName, int frequency, Area area)
+	public LootConfig(String worldName, int frequency, int duration, Area area)
 	{
 		this.worldName = worldName;
 		this.frequency = frequency;
+		this.duration = duration;
 		this.area = area;
 		this.lootTypes = new Hashtable<LootType, Integer>();
 	}
@@ -30,6 +32,11 @@ public class LootConfig
 	public int getFrequency()
 	{
 		return frequency;
+	}
+
+	public int getDuration()
+	{
+		return duration;
 	}
 
 	public Area getArea()

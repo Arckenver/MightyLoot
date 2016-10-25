@@ -136,6 +136,7 @@ public class ConfigHandler
 				LootConfig lootConfig = new LootConfig(
 						worldName, 
 						worldNode.getNode("frequency").getInt(),
+						worldNode.getNode("duration").getInt(),
 						area
 				);
 				if (worldNode.getNode("lootTypes").hasMapChildren())
@@ -260,6 +261,7 @@ public class ConfigHandler
 		node.getNode("items", "minecraft:cake").setValue("0-8");
 		
 		conf.getNode("worlds", "world", "frequency").setValue(3600);
+		conf.getNode("worlds", "world", "duration").setValue(4600);
 		conf.getNode("worlds", "world", "area").setComment("represents the area where the loot can spawn\nfor 'type', accepted values are 'rect' and 'cyl'\nif using 'rect', specify 'minX', 'maxX', 'minY', 'maxY', 'minZ', 'maxZ'\nif using 'cyl', specify 'minY', 'maxY', 'centerX', 'centerZ', 'radius'");
 		conf.getNode("worlds", "world", "area", "type").setValue("rect");
 		conf.getNode("worlds", "world", "area", "minX").setValue(-5000);

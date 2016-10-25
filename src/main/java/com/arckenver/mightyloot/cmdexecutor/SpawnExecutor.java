@@ -2,6 +2,7 @@ package com.arckenver.mightyloot.cmdexecutor;
 
 import java.util.Optional;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -12,9 +13,11 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
+import com.arckenver.mightyloot.ConfigHandler;
 import com.arckenver.mightyloot.LanguageHandler;
 import com.arckenver.mightyloot.MightyLootPlugin;
 import com.arckenver.mightyloot.object.LootConfig;
+import com.arckenver.mightyloot.task.SpawnLootRunnable;
 
 public class SpawnExecutor implements CommandExecutor
 {
@@ -39,12 +42,14 @@ public class SpawnExecutor implements CommandExecutor
 				return CommandResult.success();
 			}
 		}
-		for (LootConfig lootConfig : MightyLootPlugin.getInstance().getSpawnTasks().keySet())
+		for (LootConfig lootConfig : ConfigHandler.getLootConfigs())
 		{
 			if (lootConfig.getWorldName().equals(world.getName()))
 			{
-				MightyLootPlugin.getInstance().cancelSpawnTask(lootConfig);
-				MightyLootPlugin.getInstance().newSpawnTask(lootConfig);
+				Sponge.getScheduler()
+						.createTaskBuilder()
+						.execute(new SpawnLootRunnable(lootConfig))
+						.submit(MightyLootPlugin.getInstance());
 				return CommandResult.success();
 			}
 		}

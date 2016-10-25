@@ -1,53 +1,155 @@
 package com.arckenver.mightyloot;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
-
-import com.arckenver.mightyloot.object.Loot;
 import org.spongepowered.api.block.tileentity.carrier.Chest;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.extent.Extent;
+
+import com.arckenver.mightyloot.object.Interval;
+import com.arckenver.mightyloot.object.Loot;
+import com.arckenver.mightyloot.object.LootConfig;
+import com.arckenver.mightyloot.task.RemoveLootRunnable;
 
 public class DataHandler
 {
-	private static Hashtable<String, Loot> loots;
+	private static Hashtable<String, ArrayList<Loot>> loots;
 	
 	public static void init()
 	{
-		loots = new Hashtable<String, Loot>();
+		loots = new Hashtable<String, ArrayList<Loot>>();
 	}
 
 	// LOOT
 	
-	public static void setLoot(String worldName, Loot loot)
+	public static void placeLoot(Loot loot)
 	{
-		loots.put(worldName, loot);
+		String worldName = loot.getWorld().getName();
+		Location<World> loc = loot.getLoc();
+		
+		if (ConfigHandler.getOptions().getNode("placeGlowstoneBelowLoot").getBoolean())
+		{
+			loc.setBlockType(BlockTypes.GLOWSTONE, MightyLootPlugin.getCause());
+			loc = loc.add(0, 1, 0);
+		}
+		
+		/*
+		loc.setBlockType(BlockTypes.CHEST);
+		Chest chest = (Chest) loc.getTileEntity().get();
+		lootType.fillChest(chest.getInventory().parent());
+		*/
+		// TODO below we use setblock command, it shall be replaced by code using inventory api
+		String setblockCmd = "setblock " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ() + " chest 0 replace {Items:[";
+		int slot = 0;
+		for (Entry<ItemType, Interval> e : loot.getType().getItems().entrySet())
+		{
+			int amount = e.getValue().getRandom();
+			int max = e.getKey().getMaxStackQuantity();
+			while (amount > max)
+			{
+				setblockCmd += "{id:" + e.getKey().getId() + ",Count:" + max + ",Slot:" + slot + "},";
+				slot++;
+				amount -= max;
+			}
+			setblockCmd += "{id:" + e.getKey().getId() + ",Count:" + amount + ",Slot:" + slot + "},";
+			slot++;
+		}
+		setblockCmd = setblockCmd.substring(0, setblockCmd.length() - 1) + "]}";
+		Sponge.getCommandManager().process(Sponge.getServer().getConsole(), setblockCmd);
+		
+		loc = loc.add(0, 1, 0);
+		Extent extent = loc.getExtent();
+		for (Entry<EntityType, Integer> e : ConfigHandler.getLootGuardians().entrySet())
+		{
+			for (int i = 0; i < e.getValue(); i++)
+			{
+				Entity entity = extent.createEntity(e.getKey(), loc.getPosition());
+				extent.spawnEntity(entity,
+					Cause.source(
+						EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build()
+					).build());
+			}
+		}
+		
+		if (!loots.containsKey(worldName))
+		{
+			loots.put(worldName, new ArrayList<Loot>());
+		}
+		loots.get(worldName).add(loot);
+		
+		int duration = 0;
+		for (LootConfig lootConfig : ConfigHandler.getLootConfigs())
+		{
+			if (lootConfig.getWorldName().equals(worldName))
+			{
+				duration = lootConfig.getDuration();
+			}
+		}
+		
+		Sponge.getScheduler()
+				.createTaskBuilder()
+				.execute(new RemoveLootRunnable(loot))
+				.delay(duration, TimeUnit.SECONDS)
+				.submit(MightyLootPlugin.getInstance());
+		
+		String[] s1 = LanguageHandler.get("BC").split("\\{LOOT\\}");
+		String[] s2 = s1[0].split("\\{WORLD\\}");
+		String[] s3 = s1[1].split("\\{WORLD\\}");
+		
+		String[] s = LanguageHandler.get("BD").split("\\{CMD\\}");
+		
+		MessageChannel.TO_ALL.send(Text.builder()
+				.append(Text.of(TextColors.GOLD, (s2.length > 0) ? s2[0] : ""))
+				.append(Text.of(TextColors.YELLOW, (s2.length > 1) ? worldName : ""))
+				.append(Text.of(TextColors.GOLD, (s2.length > 1) ? s2[1] : ""))
+				.append(loot.getType().getDisplay())
+				.append(Text.of(TextColors.GOLD, (s3.length > 0) ? s3[0] : ""))
+				.append(Text.of(TextColors.YELLOW, (s3.length > 1) ? worldName : ""))
+				.append(Text.of(TextColors.GOLD, (s3.length > 1) ? s3[1] : ""))
+				.append(Text.of(" "))
+				.append(Text.of(TextColors.GOLD, (s.length > 0) ? s[0] : ""))
+				.append(Text.builder("/ml hunt").color(TextColors.YELLOW).onClick(TextActions.runCommand("/mightyloot hunt")).build())
+				.append(Text.of(TextColors.GOLD, (s.length > 1) ? s[1] : ""))
+				.build());
 	}
 	
-	public static Loot removeLoot(String worldName)
+	public static boolean removeLoot(Loot loot)
 	{
-		Loot loot = unregisterLoot(worldName);
-		if (loot == null)
+		ArrayList<Loot> arr = loots.get(loot.getWorld().getName());
+		if (arr == null || !arr.remove(loot))
 		{
-			return null;
+			return false;
 		}
 		((Chest) loot.getLoc().getTileEntity().get()).getInventory().clear();
 		loot.getLoc().setBlockType(BlockTypes.AIR, MightyLootPlugin.getCause());
 		loot.getLoc().add(0, -1, 0).setBlockType(BlockTypes.AIR, MightyLootPlugin.getCause());
-		return loot;
+		return true;
 	}
 	
-	public static Loot getLoot(String worldName)
+	public static void removeAllLoots()
 	{
-		return loots.get(worldName);
-	}
-	
-	public static boolean hasLoot(String worldName)
-	{
-		return loots.get(worldName) != null;
-	}
-
-	public static Loot unregisterLoot(String worldName)
-	{
-		return loots.remove(worldName);
+		for (ArrayList<Loot> arr : loots.values())
+		{
+			for (Loot loot : arr)
+			{
+				removeLoot(loot);
+			}
+		}
 	}
 }

@@ -1,7 +1,6 @@
 package com.arckenver.mightyloot;
 
 import java.io.File;
-import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -10,10 +9,10 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 
 import com.arckenver.mightyloot.cmdelement.WorldCommandElement;
@@ -27,7 +26,6 @@ import com.arckenver.mightyloot.listener.InteractListener;
 import com.arckenver.mightyloot.object.LootConfig;
 import com.arckenver.mightyloot.task.SpawnLootRunnable;
 import com.google.inject.Inject;
-import org.spongepowered.api.event.cause.Cause;
 
 @Plugin(id="mightyloot", name="MightyLoot", version="2.1", authors={"Arckenver"}, description="A treasurehunt-like sponge plugin.", url="https://github.com/Arckenver/MightyLoot")
 public class MightyLootPlugin
@@ -43,15 +41,11 @@ public class MightyLootPlugin
     @DefaultConfig(sharedRoot = true)
     private File defaultConfFile;
 	
-	private Hashtable<LootConfig, Task> spawnTasks;
-	
 	@Listener
 	public void onStart(GameStartingServerEvent event)
 	{
 		logger.info("Plugin starting...");
 		plugin = this;
-		
-		spawnTasks = new Hashtable<LootConfig, Task>();
 		
 		rootDir = new File(defaultConfFile.getParentFile(), "mightyloot");
 
@@ -64,7 +58,13 @@ public class MightyLootPlugin
 		
 		for (LootConfig lootConfig : ConfigHandler.getLootConfigs())
 		{
-			newSpawnTask(lootConfig, lootConfig.getFrequency());
+			Sponge.getScheduler()
+					.createTaskBuilder()
+					.execute(new SpawnLootRunnable(lootConfig))
+					.interval(lootConfig.getFrequency(), TimeUnit.SECONDS)
+					.delay(lootConfig.getFrequency(), TimeUnit.SECONDS)
+					.name("MightyLoot - SpawnLoot Task - " + lootConfig.getWorldName())
+					.submit(this);
 		}
 		
 		CommandSpec huntCmd = CommandSpec.builder()
@@ -123,37 +123,7 @@ public class MightyLootPlugin
 	@Listener
 	public void onStop(GameStoppingServerEvent event)
 	{
-		for (LootConfig lootConfig : getInstance().getSpawnTasks().keySet())
-		{
-			DataHandler.removeLoot(lootConfig.getWorldName());
-			getInstance().cancelSpawnTask(lootConfig);
-		}
-	}
-	
-	public Hashtable<LootConfig, Task> getSpawnTasks()
-	{
-		return spawnTasks;
-	}
-	
-	public void newSpawnTask(LootConfig lootConfig)
-	{
-		newSpawnTask(lootConfig, 0);
-	}
-	
-	public void newSpawnTask(LootConfig lootConfig, int delay)
-	{
-		spawnTasks.put(lootConfig, Sponge.getScheduler()
-				.createTaskBuilder()
-				.execute(new SpawnLootRunnable(lootConfig))
-				.interval(lootConfig.getFrequency(), TimeUnit.SECONDS)
-				.delay(delay, TimeUnit.SECONDS)
-				.name("MightyLoot - SpawnLoot Task - " + lootConfig.getWorldName())
-				.submit(this));
-	}
-	
-	public void cancelSpawnTask(LootConfig lootConfig)
-	{
-		spawnTasks.remove(lootConfig).cancel();
+		DataHandler.removeAllLoots();
 	}
 	
 	public static MightyLootPlugin getInstance()
