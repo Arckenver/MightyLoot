@@ -3,6 +3,7 @@ package com.arckenver.mightyloot;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.Sponge;
@@ -14,6 +15,7 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.channel.MessageChannel;
@@ -26,14 +28,17 @@ import com.arckenver.mightyloot.object.Interval;
 import com.arckenver.mightyloot.object.Loot;
 import com.arckenver.mightyloot.object.LootConfig;
 import com.arckenver.mightyloot.task.RemoveLootRunnable;
+import com.arckenver.mightyloot.task.SpawnLootRunnable;
 
 public class DataHandler
 {
-	private static Hashtable<String, ArrayList<Loot>> loots;
+	private static Hashtable<UUID, ArrayList<Loot>> loots;
+	private static ArrayList<Task> spawnTasks;
 	
 	public static void init()
 	{
-		loots = new Hashtable<String, ArrayList<Loot>>();
+		loots = new Hashtable<UUID, ArrayList<Loot>>();
+		spawnTasks = new ArrayList<Task>();
 	}
 
 	// LOOT
@@ -87,11 +92,11 @@ public class DataHandler
 			}
 		}
 		
-		if (!loots.containsKey(worldName))
+		if (!loots.containsKey(loot.getWorld().getUniqueId()))
 		{
-			loots.put(worldName, new ArrayList<Loot>());
+			loots.put(loot.getWorld().getUniqueId(), new ArrayList<Loot>());
 		}
-		loots.get(worldName).add(loot);
+		loots.get(loot.getWorld().getUniqueId()).add(loot);
 		
 		int duration = 0;
 		for (LootConfig lootConfig : ConfigHandler.getLootConfigs())
@@ -151,5 +156,30 @@ public class DataHandler
 				removeLoot(loot);
 			}
 		}
+	}
+	
+	// TASKS
+	
+	public static void startSpawnTasks()
+	{
+		for (LootConfig lootConfig : ConfigHandler.getLootConfigs())
+		{
+			spawnTasks.add(Sponge.getScheduler()
+					.createTaskBuilder()
+					.execute(new SpawnLootRunnable(lootConfig))
+					.interval(lootConfig.getFrequency(), TimeUnit.SECONDS)
+					.delay(lootConfig.getFrequency(), TimeUnit.SECONDS)
+					.name("MightyLoot - SpawnLoot Task - " + lootConfig.getWorldName())
+					.submit(MightyLootPlugin.getInstance()));
+		}
+	}
+	
+	public static void cancelSpawnTasks()
+	{
+		for (Task task : spawnTasks)
+		{
+			task.cancel();
+		}
+		spawnTasks = new ArrayList<Task>();
 	}
 }

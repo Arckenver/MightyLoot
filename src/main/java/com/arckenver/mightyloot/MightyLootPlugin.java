@@ -1,7 +1,6 @@
 package com.arckenver.mightyloot;
 
 import java.io.File;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -23,8 +22,6 @@ import com.arckenver.mightyloot.cmdexecutor.MightyLootExecutor;
 import com.arckenver.mightyloot.cmdexecutor.ReloadExecutor;
 import com.arckenver.mightyloot.cmdexecutor.SpawnExecutor;
 import com.arckenver.mightyloot.listener.InteractListener;
-import com.arckenver.mightyloot.object.LootConfig;
-import com.arckenver.mightyloot.task.SpawnLootRunnable;
 import com.google.inject.Inject;
 
 @Plugin(id="mightyloot", name="MightyLoot", version="2.1", authors={"Arckenver"}, description="A treasurehunt-like sponge plugin.", url="https://github.com/Arckenver/MightyLoot")
@@ -56,16 +53,7 @@ public class MightyLootPlugin
 		
 		DataHandler.init();
 		
-		for (LootConfig lootConfig : ConfigHandler.getLootConfigs())
-		{
-			Sponge.getScheduler()
-					.createTaskBuilder()
-					.execute(new SpawnLootRunnable(lootConfig))
-					.interval(lootConfig.getFrequency(), TimeUnit.SECONDS)
-					.delay(lootConfig.getFrequency(), TimeUnit.SECONDS)
-					.name("MightyLoot - SpawnLoot Task - " + lootConfig.getWorldName())
-					.submit(this);
-		}
+		DataHandler.startSpawnTasks();
 		
 		CommandSpec huntCmd = CommandSpec.builder()
 				.description(Text.of(""))
