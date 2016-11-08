@@ -31,7 +31,7 @@ public class MightyLootExecutor implements CommandExecutor
 		}
 		if (src.hasPermission("mightyloot.command.cancel"))
 		{
-			builder.append(Text.of(TextColors.GOLD, "\n/ml cancel [world]", TextColors.GRAY, " - ", TextColors.YELLOW, LanguageHandler.get("CD")));
+			builder.append(Text.of(TextColors.GOLD, "\n/ml cancel [world] [type]", TextColors.GRAY, " - ", TextColors.YELLOW, LanguageHandler.get("CD")));
 		}
 		if (src.hasPermission("mightyloot.command.reload"))
 		{

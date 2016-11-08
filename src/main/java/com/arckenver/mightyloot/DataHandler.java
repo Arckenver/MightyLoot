@@ -43,6 +43,11 @@ public class DataHandler
 
 	// LOOT
 	
+	public static ArrayList<Loot> getLoots(UUID worldUUID)
+	{
+		return loots.get(worldUUID);
+	}
+	
 	public static void placeLoot(Loot loot)
 	{
 		String worldName = loot.getWorld().getName();

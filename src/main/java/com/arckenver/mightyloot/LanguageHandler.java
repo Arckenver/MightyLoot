@@ -44,6 +44,7 @@ public class LanguageHandler
 		check(language.getNode("AD"), "You must be an in game player to perform that command");
 		check(language.getNode("AE"), "Config and language files has been reloaded, see console if an error occured");
 		check(language.getNode("AF"), "Could not find loot config for this world");
+		check(language.getNode("AG"), "No loot found");
 		
 		check(language.getNode("BA"), "The {LOOT} has been found by {PLAYER} ");
 		check(language.getNode("BB"), "The last {LOOT} in {WORLD} has now vanished !");

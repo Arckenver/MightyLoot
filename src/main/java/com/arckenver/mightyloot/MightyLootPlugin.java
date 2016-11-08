@@ -79,7 +79,9 @@ public class MightyLootPlugin
 		CommandSpec cancelCmd = CommandSpec.builder()
 				.description(Text.of(""))
 				.permission("mightyloot.command.cancel")
-				.arguments(GenericArguments.optional(new WorldCommandElement(Text.of("world"))))
+				.arguments(
+						GenericArguments.optional(new WorldCommandElement(Text.of("world"))),
+						GenericArguments.optional(GenericArguments.string(Text.of("type"))))
 				.executor(new CancelExecutor())
 				.build();
 		
