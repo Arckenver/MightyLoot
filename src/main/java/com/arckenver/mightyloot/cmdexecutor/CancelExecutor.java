@@ -43,7 +43,7 @@ public class CancelExecutor implements CommandExecutor
 		ArrayList<Loot> loots = DataHandler.getLoots(world.getUniqueId());
 		if (loots == null || loots.isEmpty())
 		{
-			src.sendMessage(Text.of(TextColors.RED, LanguageHandler.get("AG")));
+			src.sendMessage(Text.of(TextColors.RED, LanguageHandler.get("AC")));
 			return CommandResult.success();
 		}
 		Optional<String> optType = ctx.<String> getOne("type");
