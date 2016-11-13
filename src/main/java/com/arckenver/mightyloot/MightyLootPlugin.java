@@ -24,7 +24,7 @@ import com.arckenver.mightyloot.cmdexecutor.SpawnExecutor;
 import com.arckenver.mightyloot.listener.InteractListener;
 import com.google.inject.Inject;
 
-@Plugin(id="mightyloot", name="MightyLoot", version="2.1", authors={"Arckenver"}, description="A treasurehunt-like sponge plugin.", url="https://github.com/Arckenver/MightyLoot")
+@Plugin(id="mightyloot", name="MightyLoot", version="2.2", authors={"Arckenver"}, description="A treasurehunt-like sponge plugin.", url="https://github.com/Arckenver/MightyLoot")
 public class MightyLootPlugin
 {
 	private File rootDir;
