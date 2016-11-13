@@ -57,7 +57,7 @@ public class LanguageHandler
 		check(language.getNode("CD"), "removes the loot from a world");
 		check(language.getNode("CE"), "reloads the config and language files");
 		
-		check(language.getNode("DA"), "You must turn {DEGREES}° to the {DIRECTION} and the chest will be at a distance of {DISTANCE} blocks");
+		check(language.getNode("DA"), "You must turn {DEGREES}° to the {DIRECTION} and the nearest loot will be at a distance of {DISTANCE} blocks");
 		check(language.getNode("DB"), "right");
 		check(language.getNode("DC"), "left");
 		check(language.getNode("DD"), "click");

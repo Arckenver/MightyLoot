@@ -1,5 +1,8 @@
 package com.arckenver.mightyloot.cmdexecutor;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -23,13 +26,26 @@ public class HuntExecutor implements CommandExecutor
 		{
 			Player player = (Player) src;
 			World world = player.getWorld();
-			if (!DataHandler.hasLoot(world.getName()))
+			ArrayList<Loot> loots = DataHandler.getLoots(world.getUniqueId());
+			if (loots == null || loots.isEmpty())
 			{
 				src.sendMessage(Text.of(TextColors.RED, LanguageHandler.get("AC")));
 				return CommandResult.success();
 			}
-			Loot loot = DataHandler.getLoot(world.getName());
+			
+			Iterator<Loot> iter = loots.iterator();
+			Loot loot = iter.next();
 			int distance = (int) player.getLocation().getPosition().distance(loot.getLoc().getPosition());
+			while (iter.hasNext())
+			{
+				Loot otherLoot = iter.next();
+				int otherDistance = (int) player.getLocation().getPosition().distance(otherLoot.getLoc().getPosition());
+				if (otherDistance < distance)
+				{
+					loot = otherLoot;
+					distance = otherDistance;
+				}
+			}
 			
 			Vector3d from = player.getLocation().getPosition();
 			Vector3d to = loot.getLoc().getPosition();
