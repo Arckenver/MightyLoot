@@ -39,7 +39,7 @@ public class LanguageHandler
 		}
 		
 		check(language.getNode("AA"), "You must precise a world name");
-		check(language.getNode("AB"), "Loot is at position {POS}");
+		check(language.getNode("AB"), "Loots are at position {POS}");
 		check(language.getNode("AC"), "There is currently no loot in this world");
 		check(language.getNode("AD"), "You must be an in game player to perform that command");
 		check(language.getNode("AE"), "Config and language files has been reloaded, see console if an error occured");
