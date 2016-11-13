@@ -1,5 +1,7 @@
 package com.arckenver.mightyloot.listener;
 
+import java.util.ArrayList;
+
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
@@ -25,26 +27,30 @@ public class InteractListener
 			return;
 		}
 		Location<World> blockLoc = event.getTargetBlock().getLocation().get();
-		if (DataHandler.hasLoot(world.getName()))
+
+		ArrayList<Loot> loots = DataHandler.getLoots(world.getUniqueId());
+		if (loots != null)
 		{
-			Loot loot = DataHandler.getLoot(world.getName());
-			if (loot.getLoc().getBlockPosition().equals(blockLoc.getBlockPosition()) || loot.getLoc().getBlockPosition().add(0, -1, 0).equals(blockLoc.getBlockPosition()))
+			for (Loot loot : loots)
 			{
-				DataHandler.unregisterLoot(world.getName());
-				
-				String[] s1 = LanguageHandler.get("BA").split("\\{LOOT\\}");
-				String[] s2 = s1[0].split("\\{PLAYER\\}");
-				String[] s3 = s1[1].split("\\{PLAYER\\}");
-				
-				MessageChannel.TO_ALL.send(Text.builder()
-						.append(Text.of(TextColors.GOLD, (s2.length > 0) ? s2[0] : ""))
-						.append(Text.of(TextColors.YELLOW, (s2.length > 1) ? player.getName() : ""))
-						.append(Text.of(TextColors.GOLD, (s2.length > 1) ? s2[1] : ""))
-						.append(loot.getType().getDisplay())
-						.append(Text.of(TextColors.GOLD, (s3.length > 0) ? s3[0] : ""))
-						.append(Text.of(TextColors.YELLOW, (s3.length > 1) ? player.getName() : ""))
-						.append(Text.of(TextColors.GOLD, (s3.length > 1) ? s3[1] : ""))
-						.build());
+				if (loot.getLoc().getBlockPosition().equals(blockLoc.getBlockPosition()) || loot.getLoc().getBlockPosition().add(0, -1, 0).equals(blockLoc.getBlockPosition()))
+				{
+					DataHandler.removeLoot(loot);
+					
+					String[] s1 = LanguageHandler.get("BA").split("\\{LOOT\\}");
+					String[] s2 = s1[0].split("\\{PLAYER\\}");
+					String[] s3 = s1[1].split("\\{PLAYER\\}");
+					
+					MessageChannel.TO_ALL.send(Text.builder()
+							.append(Text.of(TextColors.GOLD, (s2.length > 0) ? s2[0] : ""))
+							.append(Text.of(TextColors.YELLOW, (s2.length > 1) ? player.getName() : ""))
+							.append(Text.of(TextColors.GOLD, (s2.length > 1) ? s2[1] : ""))
+							.append(loot.getType().getDisplay())
+							.append(Text.of(TextColors.GOLD, (s3.length > 0) ? s3[0] : ""))
+							.append(Text.of(TextColors.YELLOW, (s3.length > 1) ? player.getName() : ""))
+							.append(Text.of(TextColors.GOLD, (s3.length > 1) ? s3[1] : ""))
+							.build());
+				}
 			}
 		}
 	}
